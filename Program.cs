@@ -11,9 +11,11 @@ namespace SeleniumHolded
     {
         static void Main(string[] args)
         {
+            //Loading personal Login info
             var root = Directory.GetCurrentDirectory();
             var dotEnv = Path.Combine(root, ".env");
             DotEnv.Load(dotEnv);
+
             //Util creation
             new DriverManager().SetUpDriver(new ChromeConfig());
             IWebDriver driver = new ChromeDriver();
@@ -33,19 +35,23 @@ namespace SeleniumHolded
             new WebDriverWait(driver, TimeSpan.FromSeconds(3))
                 .Until(x => x.FindElement(By.XPath("//*[@id=\"teamViewWrapper\"]/div[1]/div/div[2]/div[2]")))
                 .Click(); 
-            Thread.Sleep(2000);
+            Thread.Sleep(2000); //Needed. Holded internal initialization stuff, dont ask me about it
             new WebDriverWait(driver, TimeSpan.FromSeconds(3))
                 .Until(x => x.FindElement(By.XPath("//*[@id=\"timetable\"]/div[2]/div[2]/div[18]")))
                 .Click(); 
             new WebDriverWait(driver, TimeSpan.FromSeconds(3))
                 .Until(x => x.FindElement(By.XPath("//*[@id=\"daySummaryPopup\"]/button[1]")))
-                .Click(); 
+                .Click();
+
+            //Checking Weekday and calling input function 
             DateTime d = DateTime.Now;
             bool friday = d.DayOfWeek == DayOfWeek.Friday;
             fillHours(driver, friday);
             new WebDriverWait(driver, TimeSpan.FromSeconds(3))
                 .Until(x => x.FindElement(By.XPath("//*[@id=\"updateSummary\"]")))
                 .Click(); 
+
+            //Needed sleep. Chrome will close if the work hours input were successfuly set.
             Thread.Sleep(500);
             closeIfCorrect(driver, friday);
         }
@@ -55,7 +61,7 @@ namespace SeleniumHolded
             driver.FindElement(By.XPath("//*[@id=\"daySummaryPopup\"]/div[4]/div[1]/div/div[2]/div[1]/input"))
                 .SendKeys( friday ? "9:00" : "08:30" );
             driver.FindElement(By.XPath("//*[@id=\"daySummaryPopup\"]/div[4]/div[1]/div/div[2]/div[2]/input"))
-                .SendKeys(Keys.Backspace + Keys.Backspace + Keys.Backspace + Keys.Backspace + Keys.Backspace +  "14:00");
+                .SendKeys(Keys.Backspace + Keys.Backspace + Keys.Backspace + Keys.Backspace + Keys.Backspace +  "14:00"); //Yeah i did that. Sue me.
 
             if (!friday) {
                 new WebDriverWait(driver, TimeSpan.FromSeconds(3))

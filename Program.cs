@@ -73,12 +73,12 @@ namespace SeleniumHolded
             Console.WriteLine(check);
             if (friday){
                 if (check == "05h 00m"){
-                    driver.Close();
+                    driver.Quit();
                 }
             }
             else{
                 if (check == "08h 45m"){
-                    // driver.Quit();
+                    driver.Quit();
                 }
             }
         }
